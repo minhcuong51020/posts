@@ -16,4 +16,6 @@ public interface UserInfoService {
     UserInfoResponse delete(String id);
 
     PageDTO<UserInfoResponse> search(UserInfoSearchRequest request);
+
+    PageDTO<UserInfoResponse> searchAuto(UserInfoSearchRequest request);
 }

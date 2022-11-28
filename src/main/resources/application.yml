@@ -28,3 +28,9 @@ eureka:
 #secret:
 jwt:
   secret: MinhCuong
+
+#sms
+sms:
+  account_sid: AC25a1e8642542d40bf1255d28885cd988
+  auth_token: cb2bffc06c8e96fb91a0ecb11e1149f4
+  from_phone: +14635837605

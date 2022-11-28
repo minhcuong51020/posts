@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 
 @Setter
 @Getter
@@ -22,6 +23,8 @@ public class PostResponse implements Serializable {
     private LocalDate createdAt;
 
     private LocalDate modifiedAt;
+
+    private List<PostRedditResponse> postRedditResponses;
 
     private Boolean deleted;
 

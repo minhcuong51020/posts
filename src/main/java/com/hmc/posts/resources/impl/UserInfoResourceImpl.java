@@ -42,4 +42,9 @@ public class UserInfoResourceImpl implements UserInfoResource {
     public PagingResponse<UserInfoResponse> searchUserInfo(UserInfoSearchRequest request) {
         return PagingResponse.of(this.userInfoService.search(request));
     }
+
+    @Override
+    public PagingResponse<UserInfoResponse> searchUserInfoAuto(UserInfoSearchRequest request) {
+        return PagingResponse.of(this.userInfoService.searchAuto(request));
+    }
 }

@@ -1,6 +1,9 @@
 package com.hmc.posts.service.impl;
 
+import com.hmc.client.SocialClient;
 import com.hmc.common.dto.PageDTO;
+import com.hmc.common.dto.response.RedditDTO;
+import com.hmc.common.dto.response.RedditGroupDTO;
 import com.hmc.common.enums.error.AuthenticationError;
 import com.hmc.common.exception.ResponseException;
 import com.hmc.common.util.IdUtils;
@@ -8,9 +11,12 @@ import com.hmc.config.SecurityUtils;
 import com.hmc.posts.dto.request.PostCreateRequest;
 import com.hmc.posts.dto.request.PostSearchRequest;
 import com.hmc.posts.dto.request.PostUpdateRequest;
+import com.hmc.posts.dto.response.PostRedditResponse;
 import com.hmc.posts.dto.response.PostResponse;
 import com.hmc.posts.entity.PostEntity;
+import com.hmc.posts.entity.PostRedditEntity;
 import com.hmc.posts.mapper.PostMapper;
+import com.hmc.posts.repository.PostRedditRepository;
 import com.hmc.posts.repository.PostRepository;
 import com.hmc.posts.repository.custom.PostRepositoryCustom;
 import com.hmc.posts.service.PostService;
@@ -20,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -32,6 +39,10 @@ public class PostServiceImpl implements PostService {
     private final PostRepositoryCustom postRepositoryCustom;
 
     private final PostMapper postMapper;
+
+    private final PostRedditRepository postRedditRepository;
+
+    private final SocialClient socialClient;
 
     @Override
     public PostResponse create(PostCreateRequest request) {
@@ -65,7 +76,18 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostResponse findById(String id) {
         PostEntity postEntity = ensurePostEntity(id);
-        return this.postMapper.toDomain(postEntity);
+        PostResponse postResponse = this.postMapper.toDomain(postEntity);
+        List<PostRedditResponse> postRedditResponseList = new ArrayList<>();
+        List<PostRedditEntity> postRedditEntities = this.postRedditRepository.findAllByPostId(id);
+        for (PostRedditEntity pr : postRedditEntities) {
+            RedditGroupDTO group = this.socialClient.getRedditGroupById(pr.getRedditGroupId()).getData();
+            PostRedditResponse response = new PostRedditResponse(
+                    pr.getId(), group.getName(), group.getNameUrl(), pr.getCreatedAt()
+            );
+            postRedditResponseList.add(response);
+        }
+        postResponse.setPostRedditResponses(postRedditResponseList);
+        return postResponse;
     }
 
     @Override

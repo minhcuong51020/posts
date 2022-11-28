@@ -33,4 +33,9 @@ public interface UserInfoResource {
     @PreAuthorize("hasAnyRole({'ROLE_USER', 'ROLE_ADMIN'})")
     PagingResponse<UserInfoResponse> searchUserInfo(@ValidatePaging(allowedSorts = {"name", "createdAt"})
                                                     UserInfoSearchRequest request);
+
+    @GetMapping("/api/user-info/auto-complete")
+    @PreAuthorize("hasAnyRole({'ROLE_USER', 'ROLE_ADMIN'})")
+    PagingResponse<UserInfoResponse> searchUserInfoAuto(@ValidatePaging(allowedSorts = {"name", "createdAt"})
+                                                    UserInfoSearchRequest request);
 }

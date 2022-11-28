@@ -1,6 +1,9 @@
 package com.hmc.posts.resources.impl;
 
+import com.hmc.client.SocialClient;
 import com.hmc.common.dto.response.PagingResponse;
+import com.hmc.common.dto.response.RedditDTO;
+import com.hmc.common.dto.response.RedditGroupDTO;
 import com.hmc.common.dto.response.Response;
 import com.hmc.posts.dto.request.PostCreateRequest;
 import com.hmc.posts.dto.request.PostSearchRequest;
@@ -10,7 +13,6 @@ import com.hmc.posts.dto.response.PostResponse;
 import com.hmc.posts.resources.PostResource;
 import com.hmc.posts.service.FileService;
 import com.hmc.posts.service.PostService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,9 +23,12 @@ public class PostResourceImpl implements PostResource {
 
     private final FileService fileService;
 
-    public PostResourceImpl(PostService postService, FileService fileService) {
+    private final SocialClient socialClient;
+
+    public PostResourceImpl(PostService postService, FileService fileService, SocialClient socialClient) {
         this.postService = postService;
         this.fileService = fileService;
+        this.socialClient = socialClient;
     }
 
     @Override

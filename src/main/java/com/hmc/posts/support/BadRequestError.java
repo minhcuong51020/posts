@@ -11,6 +11,10 @@ public enum BadRequestError  implements ResponseError {
     USER_INFO_NOT_FOUND(40008001, "Không tìm thấy thông tin người dùng"),
 
     USER_INFO_ACCESS_DENIED(40008002, "Không có quyền truy cập thông tin người dùng"),
+
+    EMAIL_NOT_FOUND(40008002, "Không tìm thấy email"),
+
+    SEND_EMAIL_ERROR(40008002, "Gửi email thất bại"),
     ;
 
     private final Integer code;

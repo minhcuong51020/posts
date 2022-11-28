@@ -15,6 +15,7 @@ import com.hmc.posts.repository.custom.UserInfoRepositoryCustom;
 import com.hmc.posts.service.UserInfoService;
 import com.hmc.posts.support.BadRequestError;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -86,6 +87,24 @@ public class UserInfoServiceImpl implements UserInfoService {
         if(total <= 0) {
             return new PageDTO<>();
         }
+        List<UserInfoEntity> userInfoEntities = this.userInfoRepositoryCustom.search(request, currentUserLogin);
+        List<UserInfoResponse> userInfoResponses = this.userInfoMapper.toDomain(userInfoEntities);
+        return new PageDTO<>(
+                userInfoResponses,
+                request.getPageIndex(),
+                request.getPageSize(),
+                total
+        );
+    }
+
+    @Override
+    public PageDTO<UserInfoResponse> searchAuto(UserInfoSearchRequest request) {
+        String currentUserLogin = this.ensureUserIdLogin();
+        Long total = this.userInfoRepository.countUserInfo(currentUserLogin);
+        if(total <= 0) {
+            return new PageDTO<>();
+        }
+        request.setPageSize(Integer.parseInt(total.toString()));
         List<UserInfoEntity> userInfoEntities = this.userInfoRepositoryCustom.search(request, currentUserLogin);
         List<UserInfoResponse> userInfoResponses = this.userInfoMapper.toDomain(userInfoEntities);
         return new PageDTO<>(

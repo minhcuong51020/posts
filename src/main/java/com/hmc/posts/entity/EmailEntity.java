@@ -1,6 +1,10 @@
 package com.hmc.posts.entity;
 
-import lombok.*;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,22 +14,22 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "posts")
+@Table(name = "email")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostEntity implements Serializable {
+public class EmailEntity implements Serializable {
 
     @Id
     @Column(name = "id", nullable = false)
     private String id;
 
-    @Column(name = "title", nullable = false)
-    private String title;
+    @Column(name = "email", nullable = false)
+    private String email;
 
-    @Column(name = "content", nullable = false)
-    private String content;
+    @Column(name = "passwordGenerate", nullable = false)
+    private String password;
 
     @Column(name = "owner_id", nullable = false)
     private String ownerId;
