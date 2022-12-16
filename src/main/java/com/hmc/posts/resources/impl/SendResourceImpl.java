@@ -1,7 +1,9 @@
 package com.hmc.posts.resources.impl;
 
 import com.hmc.common.dto.response.Response;
+import com.hmc.posts.dto.request.PostLineRequest;
 import com.hmc.posts.dto.request.PostRedditCreateRequest;
+import com.hmc.posts.dto.request.PostTwitterRequest;
 import com.hmc.posts.dto.request.PostUserInfoRequest;
 import com.hmc.posts.dto.response.PostResponse;
 import com.hmc.posts.resources.SendResource;
@@ -32,6 +34,18 @@ public class SendResourceImpl implements SendResource {
     @Override
     public Response<PostResponse> sendSms(PostUserInfoRequest request) {
         this.sendService.postToSms(request);
+        return Response.ok();
+    }
+
+    @Override
+    public Response<?> sendLine(PostLineRequest request) {
+        this.sendService.postToLine(request);
+        return Response.ok();
+    }
+
+    @Override
+    public Response<?> sendTwitter(PostTwitterRequest request) {
+        this.sendService.postToTwitter(request);
         return Response.ok();
     }
 }

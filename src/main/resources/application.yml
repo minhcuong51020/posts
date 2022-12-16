@@ -32,5 +32,5 @@ jwt:
 #sms
 sms:
   account_sid: AC25a1e8642542d40bf1255d28885cd988
-  auth_token: cb2bffc06c8e96fb91a0ecb11e1149f4
+  auth_token: 41c7c7a7db64a446415bcbc62912b6c1
   from_phone: +14635837605

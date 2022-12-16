@@ -12,11 +12,11 @@ import java.time.LocalDate;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PostEmailResponse implements Serializable {
+public class PostSmsResponse implements Serializable {
 
     private String name;
 
-    private String email;
+    private String phone;
 
     private String address;
 

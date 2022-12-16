@@ -25,7 +25,7 @@ public interface UserInfoResource {
     @PreAuthorize("hasAnyRole({'ROLE_USER', 'ROLE_ADMIN'})")
     Response<UserInfoResponse> detailUserInfo(@PathVariable("id") String id);
 
-    @GetMapping("/api/user-info/{id}/delete")
+    @PostMapping("/api/user-info/{id}/delete")
     @PreAuthorize("hasAnyRole({'ROLE_USER', 'ROLE_ADMIN'})")
     Response<UserInfoResponse> deleteUserInfo(@PathVariable("id") String id);
 

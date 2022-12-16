@@ -19,6 +19,8 @@ public class PostUserInfoRequest implements Serializable {
 
     private List<String> userInfoIds;
 
+    private String emailId;
+
     private TypePostUserInfo type;
 
 }

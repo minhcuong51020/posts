@@ -29,7 +29,7 @@ public interface PostResource {
     @PreAuthorize("hasAnyRole({'ROLE_USER', 'ROLE_ADMIN'})")
     Response<PostResponse> findPostById(@PathVariable("id") String id);
 
-    @GetMapping("/api/posts/{id}/delete")
+    @PostMapping("/api/posts/{id}/delete")
     @PreAuthorize("hasAnyRole({'ROLE_USER', 'ROLE_ADMIN'})")
     Response<PostResponse> deletePost(@PathVariable("id") String id);
 

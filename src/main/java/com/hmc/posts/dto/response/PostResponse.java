@@ -26,6 +26,12 @@ public class PostResponse implements Serializable {
 
     private List<PostRedditResponse> postRedditResponses;
 
+    private List<PostEmailResponse> postEmailResponses;
+
+    private List<PostSmsResponse> postSmsResponses;
+
+    private List<PostSocialResponse> postSocialResponses;
+
     private Boolean deleted;
 
 }

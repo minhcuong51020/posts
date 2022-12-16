@@ -16,6 +16,8 @@ public class PostRedditCreateRequest implements Serializable {
 
     private String postId;
 
+    private String redditId;
+
     private List<String> redditIds;
 
     private List<String> redditNameUrls;

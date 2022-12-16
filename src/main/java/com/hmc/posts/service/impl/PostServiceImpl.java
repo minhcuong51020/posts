@@ -2,8 +2,10 @@ package com.hmc.posts.service.impl;
 
 import com.hmc.client.SocialClient;
 import com.hmc.common.dto.PageDTO;
+import com.hmc.common.dto.response.LineDTO;
 import com.hmc.common.dto.response.RedditDTO;
 import com.hmc.common.dto.response.RedditGroupDTO;
+import com.hmc.common.dto.response.TwitterDTO;
 import com.hmc.common.enums.error.AuthenticationError;
 import com.hmc.common.exception.ResponseException;
 import com.hmc.common.util.IdUtils;
@@ -11,16 +13,15 @@ import com.hmc.config.SecurityUtils;
 import com.hmc.posts.dto.request.PostCreateRequest;
 import com.hmc.posts.dto.request.PostSearchRequest;
 import com.hmc.posts.dto.request.PostUpdateRequest;
-import com.hmc.posts.dto.response.PostRedditResponse;
-import com.hmc.posts.dto.response.PostResponse;
-import com.hmc.posts.entity.PostEntity;
-import com.hmc.posts.entity.PostRedditEntity;
+import com.hmc.posts.dto.response.*;
+import com.hmc.posts.entity.*;
 import com.hmc.posts.mapper.PostMapper;
-import com.hmc.posts.repository.PostRedditRepository;
-import com.hmc.posts.repository.PostRepository;
+import com.hmc.posts.repository.*;
 import com.hmc.posts.repository.custom.PostRepositoryCustom;
 import com.hmc.posts.service.PostService;
 import com.hmc.posts.support.BadRequestError;
+import com.hmc.posts.support.enums.TypePostSocial;
+import com.hmc.posts.support.enums.TypePostUserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -42,7 +44,15 @@ public class PostServiceImpl implements PostService {
 
     private final PostRedditRepository postRedditRepository;
 
+    private final PostUserInfoRepository postUserInfoRepository;
+
     private final SocialClient socialClient;
+
+    private final UserInfoRepository userInfoRepository;
+
+    private final PostLineRepository postLineRepository;
+
+    private final PostTwitterRepository postTwitterRepository;
 
     @Override
     public PostResponse create(PostCreateRequest request) {
@@ -77,16 +87,10 @@ public class PostServiceImpl implements PostService {
     public PostResponse findById(String id) {
         PostEntity postEntity = ensurePostEntity(id);
         PostResponse postResponse = this.postMapper.toDomain(postEntity);
-        List<PostRedditResponse> postRedditResponseList = new ArrayList<>();
-        List<PostRedditEntity> postRedditEntities = this.postRedditRepository.findAllByPostId(id);
-        for (PostRedditEntity pr : postRedditEntities) {
-            RedditGroupDTO group = this.socialClient.getRedditGroupById(pr.getRedditGroupId()).getData();
-            PostRedditResponse response = new PostRedditResponse(
-                    pr.getId(), group.getName(), group.getNameUrl(), pr.getCreatedAt()
-            );
-            postRedditResponseList.add(response);
-        }
-        postResponse.setPostRedditResponses(postRedditResponseList);
+        this.enrichPostRedditResponse(postResponse);
+        this.enrichPostEmailResponse(postResponse);
+        this.enrichPostSmsResponse(postResponse);
+        this.enrichPostSocialResponse(postResponse);
         return postResponse;
     }
 
@@ -127,5 +131,86 @@ public class PostServiceImpl implements PostService {
         return SecurityUtils.getCurrentUserLoginId().orElseThrow(
                 () -> new ResponseException(AuthenticationError.AUTHENTICATION_ERROR)
         );
+    }
+
+    private void enrichPostRedditResponse(PostResponse postResponse) {
+        List<PostRedditResponse> postRedditResponseList = new ArrayList<>();
+        List<PostRedditEntity> postRedditEntities =
+                this.postRedditRepository.findAllByPostId(postResponse.getId());
+        for (PostRedditEntity pr : postRedditEntities) {
+            RedditGroupDTO group = this.socialClient.getRedditGroupById(pr.getRedditGroupId()).getData();
+            PostRedditResponse response = new PostRedditResponse(
+                    pr.getId(), group.getName(), group.getNameUrl(), pr.getCreatedAt()
+            );
+            postRedditResponseList.add(response);
+        }
+        postResponse.setPostRedditResponses(postRedditResponseList);
+    }
+
+    private void enrichPostEmailResponse(PostResponse postResponse) {
+        List<PostEmailResponse> postEmailResponses = new ArrayList<>();
+        List<PostUserInfoEntity> postUserInfoEntities =
+                this.postUserInfoRepository.findAllByPostIdAndType(postResponse.getId(), TypePostUserInfo.EMAIL);
+        postUserInfoEntities.forEach((item) -> {
+            UserInfoEntity userInfo = this.userInfoRepository.findById(item.getUserInfoId()).orElseThrow(
+                    () -> new ResponseException(BadRequestError.USER_INFO_NOT_FOUND)
+            );
+            PostEmailResponse postEmailResponse = new PostEmailResponse();
+            postEmailResponse.setName(userInfo.getName());
+            postEmailResponse.setEmail(userInfo.getEmail());
+            postEmailResponse.setAddress(userInfo.getAddress());
+            postEmailResponse.setTimeSend(item.getTimeSend());
+            postEmailResponses.add(postEmailResponse);
+        });
+        postResponse.setPostEmailResponses(postEmailResponses);
+    }
+
+    private void enrichPostSmsResponse(PostResponse postResponse) {
+        List<PostSmsResponse> postSmsResponses = new ArrayList<>();
+        List<PostUserInfoEntity> postUserInfoEntities =
+                this.postUserInfoRepository.findAllByPostIdAndType(postResponse.getId(), TypePostUserInfo.SMS);
+        postUserInfoEntities.forEach((item) -> {
+            UserInfoEntity userInfo = this.userInfoRepository.findById(item.getUserInfoId()).orElseThrow(
+                    () -> new ResponseException(BadRequestError.USER_INFO_NOT_FOUND)
+            );
+            PostSmsResponse postSmsResponse = new PostSmsResponse();
+            postSmsResponse.setName(userInfo.getName());
+            postSmsResponse.setPhone(userInfo.getPhone());
+            postSmsResponse.setAddress(userInfo.getAddress());
+            postSmsResponse.setTimeSend(item.getTimeSend());
+            postSmsResponses.add(postSmsResponse);
+        });
+        postResponse.setPostSmsResponses(postSmsResponses);
+    }
+
+    private void enrichPostSocialResponse(PostResponse postResponse) {
+        List<PostSocialResponse> postSocialResponses = new ArrayList<>();
+        List<PostLineEntity> postLineEntities = this.postLineRepository.findAllByPostId(postResponse.getId());
+        List<PostTwitterEntity> postTwitterEntities = this.postTwitterRepository.findAllByPostId(postResponse.getId());
+        if(Objects.nonNull(postLineEntities)) {
+            postLineEntities.forEach((item) -> {
+                try {
+                    LineDTO lineDTO = socialClient.getLineById(item.getLineId()).getData();
+                    PostSocialResponse response = new PostSocialResponse(
+                            TypePostSocial.LINE, lineDTO.getChannelName(), item.getTimeSend()
+                    );
+                    postSocialResponses.add(response);
+                } catch (Exception e) {
+                }
+            });
+        }
+        if(Objects.nonNull(postTwitterEntities)) {
+            postTwitterEntities.forEach((item) -> {
+                try {
+                    TwitterDTO twitterDTO = socialClient.getTwitterById(item.getTwitterId()).getData();
+                    PostSocialResponse response = new PostSocialResponse(
+                            TypePostSocial.TWITTER, twitterDTO.getName(), item.getTimeSend()
+                    );
+                    postSocialResponses.add(response);
+                } catch (Exception e) {
+                }
+            });
+        }
+        postResponse.setPostSocialResponses(postSocialResponses);
     }
 }

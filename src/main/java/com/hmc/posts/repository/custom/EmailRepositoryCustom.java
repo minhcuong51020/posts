@@ -56,7 +56,7 @@ public class EmailRepositoryCustom {
         sql.append("WHERE 1 = 1 ");
         sql.append("AND R.deleted = false ");
         if(!StrUtils.isBlank(request.getKeyword())) {
-            sql.append("AND R.email like :email");
+            sql.append("AND R.email like :email ");
             values.put("email", SqlUtils.encodeKeyword(request.getKeyword()));
         }
         if(!StrUtils.isBlank(currentUserId)) {

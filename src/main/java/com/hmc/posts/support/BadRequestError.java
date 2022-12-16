@@ -2,7 +2,7 @@ package com.hmc.posts.support;
 
 import com.hmc.common.exception.ResponseError;
 
-public enum BadRequestError  implements ResponseError {
+public enum BadRequestError implements ResponseError {
 
     POST_NOT_FOUND(40007001, "Không tìm thấy bài viết"),
 
@@ -12,9 +12,17 @@ public enum BadRequestError  implements ResponseError {
 
     USER_INFO_ACCESS_DENIED(40008002, "Không có quyền truy cập thông tin người dùng"),
 
-    EMAIL_NOT_FOUND(40008002, "Không tìm thấy email"),
+    EMAIL_NOT_FOUND(40008003, "Không tìm thấy email"),
 
-    SEND_EMAIL_ERROR(40008002, "Gửi email thất bại"),
+    SEND_EMAIL_ERROR(40008004, "Gửi email thất bại"),
+
+    LINE_NOT_FOUND(40008005, "Chưa có tài khoản line"),
+
+    SEND_LINE_ERROR(40008006, "Gửi line thất bại"),
+
+    TWITTER_NOT_FOUND(40008007, "Chưa có tài khoản twitter"),
+
+    SEND_TWITTER_ERROR(40008008, "Gửi twitter thất bại")
     ;
 
     private final Integer code;
@@ -33,11 +41,18 @@ public enum BadRequestError  implements ResponseError {
 
     @Override
     public String getMessage() {
-        return message;
+        return this.message;
     }
 
     @Override
     public int getStatus() {
         return 400;
     }
+
+    @Override
+    public Integer getCode() {
+        return this.code;
+    }
+
+
 }

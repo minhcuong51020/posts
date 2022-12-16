@@ -125,6 +125,16 @@
             <artifactId>twilio</artifactId>
             <version>9.1.2</version>
         </dependency>
+        <dependency>
+            <groupId>com.linecorp.bot</groupId>
+            <artifactId>line-bot-api-client</artifactId>
+            <version>5.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.twitter4j</groupId>
+            <artifactId>twitter4j-core</artifactId>
+            <version>4.1.2</version>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
