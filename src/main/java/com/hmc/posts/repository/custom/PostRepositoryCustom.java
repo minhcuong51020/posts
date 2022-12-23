@@ -56,10 +56,10 @@ public class PostRepositoryCustom {
         sql.append("WHERE 1 = 1 ");
         sql.append("AND R.deleted = false ");
         if(!StrUtils.isBlank(request.getKeyword())) {
-            sql.append("AND (R.title like :title ");
-            values.put("title", SqlUtils.encodeKeyword(request.getKeyword()));
-            sql.append("OR R.content like :content) ");
-            values.put("content", SqlUtils.encodeKeyword(request.getKeyword()));
+            sql.append("AND (LOWER(R.title) like :title ");
+            values.put("title", SqlUtils.encodeKeyword(request.getKeyword()).toLowerCase());
+            sql.append("OR LOWER(R.content) like :content) ");
+            values.put("content", SqlUtils.encodeKeyword(request.getKeyword()).toLowerCase());
         }
         if(!StrUtils.isBlank(currentUserId)) {
             sql.append("AND R.ownerId = :ownerId ");

@@ -56,12 +56,12 @@ public class UserInfoRepositoryCustom {
         sql.append("WHERE 1 = 1 ");
         sql.append("AND R.deleted = false ");
         if(!StrUtils.isBlank(request.getKeyword())) {
-            sql.append("AND (R.name like :name ");
-            values.put("name", SqlUtils.encodeKeyword(request.getKeyword()));
-            sql.append("OR R.email like :email ");
-            values.put("email", SqlUtils.encodeKeyword(request.getKeyword()));
-            sql.append("OR R.address like :address ");
-            values.put("address", SqlUtils.encodeKeyword(request.getKeyword()));
+            sql.append("AND (LOWER(R.name) like :name ");
+            values.put("name", SqlUtils.encodeKeyword(request.getKeyword()).toLowerCase());
+            sql.append("OR LOWER(R.email) like :email ");
+            values.put("email", SqlUtils.encodeKeyword(request.getKeyword()).toLowerCase());
+            sql.append("OR LOWER(R.address) like :address ");
+            values.put("address", SqlUtils.encodeKeyword(request.getKeyword().toLowerCase()));
             sql.append("OR R.phone like :phone) ");
             values.put("phone", SqlUtils.encodeKeyword(request.getKeyword()));
         }

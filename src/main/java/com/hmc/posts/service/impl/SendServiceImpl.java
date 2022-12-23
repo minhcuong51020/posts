@@ -144,6 +144,7 @@ public class SendServiceImpl implements SendService {
         String title = postEntity.getTitle();
         String content = postEntity.getContent();
         Map<String, String> userPhoneSuccesses = new HashMap<>();
+        System.out.println(content);
         sendToSms(title, content, userPhones, userPhoneSuccesses);
         List<PostUserInfoEntity> postUserInfoEntities = new ArrayList<>();
         userPhoneSuccesses.forEach((key, value) -> {
@@ -368,7 +369,7 @@ public class SendServiceImpl implements SendService {
         final String prefix = "+84";
         toPhones.forEach((key, value) -> {
             try {
-                String toPhone = prefix + value;
+                String toPhone = prefix + value.substring(1);
                 String sms = title + "\n" + convertText.convertHtmlToText(content);
                 com.twilio.rest.api.v2010.account.Message.creator(new PhoneNumber(toPhone),
                         new PhoneNumber(fromPhone),

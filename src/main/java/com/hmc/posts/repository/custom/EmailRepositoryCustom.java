@@ -56,8 +56,8 @@ public class EmailRepositoryCustom {
         sql.append("WHERE 1 = 1 ");
         sql.append("AND R.deleted = false ");
         if(!StrUtils.isBlank(request.getKeyword())) {
-            sql.append("AND R.email like :email ");
-            values.put("email", SqlUtils.encodeKeyword(request.getKeyword()));
+            sql.append("AND LOWER(R.email) like :email ");
+            values.put("email", SqlUtils.encodeKeyword(request.getKeyword()).toLowerCase());
         }
         if(!StrUtils.isBlank(currentUserId)) {
             sql.append("AND R.ownerId = :ownerId ");
